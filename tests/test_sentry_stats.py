@@ -17,17 +17,32 @@ class SentryStatsTest(unittest.TestCase):
         # for testing..
         parser.read("config.ini")
         self.sentry_key = parser.get("api_keys", "sentry")
-
-    def test1(self):
-        """
-        placeholder test
-        """
-        self.assertEqual("True", str(True))
+        self.organization = parser.get("event_filters", "organization")
+        self.project = parser.get("event_filters", "project")
 
     def test_get_projects(self):
         """
         basic test that the raw project json can be retrieved
         """
-        stats = SentryStats(self.sentry_key, "tempo-automation")
+        stats = SentryStats(self.sentry_key, self.organization)
         projects = stats.retrieve_projects_raw()
         self.assertIsNotNone(projects)
+        for project in projects:
+            self.assertIsNotNone(project["status"])
+            self.assertIsNotNone(project["slug"])
+
+    def test_get_events(self):
+        """
+        basic test that the raw project json can be retrieved
+        """
+        stats = SentryStats(self.sentry_key, self.organization)
+        events = stats.retrieve_events_raw(self.project)
+        self.assertIsNotNone(events)
+        for event in events:
+            print event["eventID"]
+            self.assertIsNotNone(event["dateCreated"])
+            self.assertIsNotNone(event["dateCreated"])
+            # note that sometimes the user node is not present
+            # self.assertIsNotNone(event["user"])
+            # self.assertIsNotNone(event["user"]["ip_address"])
+            self.assertIsNotNone(event["entries"])

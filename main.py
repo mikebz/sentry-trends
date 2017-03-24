@@ -9,7 +9,12 @@ def main():
     parser = ConfigParser.ConfigParser()
     parser.read("config.ini")
     sentry_key = parser.get("api_keys", "sentry")
+    organization = parser.get("event_filters", "organization")
+    project = parser.get("event_filters", "project")
+
     print "Sentry Key: " + sentry_key[0:5] + "..."
+    print "Organization: " + organization
+    print "Project: " + project
 
 
 if __name__ == "__main__":

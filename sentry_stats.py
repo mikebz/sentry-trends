@@ -22,7 +22,14 @@ class SentryStats:
         """
         get the raw events for a particular project
         """
-        pass
+        result = requests.get(
+            "https://app.getsentry.com/api/0/projects/{}/{}/events/".format(
+                self.organization, project),
+            headers=self._headers()
+            )
+        result.raise_for_status()
+        payload = result.json()
+        return payload
 
     def retrieve_projects_raw(self):
         """
