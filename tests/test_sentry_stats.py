@@ -1,5 +1,7 @@
 """testing of Sentry wrapper"""
 import unittest
+import string
+from random import choice
 from configparser import ConfigParser
 from sentry_stats import SentryStats
 
@@ -51,3 +53,43 @@ class SentryStatsTest(unittest.TestCase):
             self.assertIsNotNone(event["entries"])
             self.assertIsNotNone(event["type"])
             self.assertIsNotNone(event["message"])
+
+    def test_parse_link(self):
+        """ parse a full link header with previous and next """
+        link_header = ("<https://sentry.io/api/0/projects/tempo-automation/tem"
+                       "pocom-prod/events/?&cursor=1489099048000:0:1>; rel=\"p"
+                       "revious\"; results=\"true\"; cursor=\"1489099048000:0:"
+                       "1\", <https://sentry.io/api/0/projects/tempo-automatio"
+                       "n/tempocom-prod/events/?&cursor=1488932091000:0:0>; re"
+                       "l=\"next\"; results=\"true\"; cursor=\"1488932091000:0"
+                       ":0\"")
+        next_link = SentryStats.parse_next_url(link_header)
+        self.assertEqual(("https://sentry.io/api/0/projects/tempo-automation/"
+                          "tempocom-prod/events/?&cursor=1488932091000:0:0"),
+                         next_link)
+
+    def test_parse_no_prev(self):
+        """ parse a header that just has next and no previous """
+        link_header = ("<https://sentry.io/api/0/projects/tempo-automatio"
+                       "n/tempocom-prod/events/?&cursor=1488932091000:0:0>; re"
+                       "l=\"next\"; results=\"true\"; cursor=\"1488932091000:0"
+                       ":0\"")
+        next_link = SentryStats.parse_next_url(link_header)
+        self.assertEqual(("https://sentry.io/api/0/projects/tempo-automation/"
+                          "tempocom-prod/events/?&cursor=1488932091000:0:0"),
+                         next_link)
+
+    def test_parse_no_next(self):
+        """ parse a header that just previous """
+        link_header = ("<https://sentry.io/api/0/projects/tempo-automation/tem"
+                       "pocom-prod/events/?&cursor=1489099048000:0:1>; rel=\"p"
+                       "revious\"; results=\"true\"; cursor=\"1489099048000:0:"
+                       "1\"")
+        next_link = SentryStats.parse_next_url(link_header)
+        self.assertIsNone(next_link)
+
+    def test_parse_gibberish(self):
+        """ parse a header that just previous """
+        random_string = ''.join(choice(string.printable) for x in range(200))
+        next_link = SentryStats.parse_next_url(random_string)
+        self.assertIsNone(next_link)
