@@ -4,7 +4,7 @@ sentry stats functions
 import requests
 
 
-class SentryStats:
+class SentryStats(object):
     """
     class for getting sentry stats
     """

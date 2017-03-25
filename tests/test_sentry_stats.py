@@ -1,6 +1,7 @@
+"""testing of Sentry wrapper"""
 import unittest
 from configparser import ConfigParser
-from sentry_stats import SentryStats
+from ..sentry_stats import SentryStats
 
 
 class SentryStatsTest(unittest.TestCase):

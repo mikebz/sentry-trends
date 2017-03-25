@@ -1,15 +1,13 @@
-"""
-small utility for dumping out Sentry event trends
-"""
+"""small utility for dumping out Sentry event trends"""
 import ConfigParser
-from sentry_stats import SentryStats
+from .sentry_stats import SentryStats
 
 
 def deep_get(dictionary, *keys):
     """
     deep get for nested dictionaries, great for getting stuff from
     REST api_keys
-    Courtesy of: 
+    Courtesy of:
     http://stackoverflow.com/questions/25833613/python-safe-method-to-get-value-of-nested-dictionary  # noqa
     """
     return reduce(lambda d, key: d.get(key) if d else None, keys, dictionary)
