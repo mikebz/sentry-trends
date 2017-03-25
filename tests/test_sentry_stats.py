@@ -1,7 +1,7 @@
 """testing of Sentry wrapper"""
 import unittest
 from configparser import ConfigParser
-from ..sentry_stats import SentryStats
+from sentry_stats import SentryStats
 
 
 class SentryStatsTest(unittest.TestCase):
@@ -26,8 +26,9 @@ class SentryStatsTest(unittest.TestCase):
         basic test that the raw project json can be retrieved
         """
         stats = SentryStats(self.sentry_key, self.organization)
-        projects = stats.retrieve_projects_raw()
+        projects, link = stats.retrieve_projects_raw()
         self.assertIsNotNone(projects)
+        self.assertIsNotNone(link)
         for project in projects:
             self.assertIsNotNone(project["status"])
             self.assertIsNotNone(project["slug"])
@@ -37,8 +38,9 @@ class SentryStatsTest(unittest.TestCase):
         basic test that the raw project json can be retrieved
         """
         stats = SentryStats(self.sentry_key, self.organization)
-        events = stats.retrieve_events_raw(self.project)
+        events, link = stats.retrieve_events_raw(self.project)
         self.assertIsNotNone(events)
+        self.assertIsNotNone(link)
         for event in events:
             print event["eventID"]
             self.assertIsNotNone(event["dateCreated"])

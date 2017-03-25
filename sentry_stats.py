@@ -29,7 +29,7 @@ class SentryStats(object):
             )
         result.raise_for_status()
         payload = result.json()
-        return payload
+        return payload, result.headers["Link"]
 
     def retrieve_projects_raw(self):
         """
@@ -41,4 +41,4 @@ class SentryStats(object):
             )
         result.raise_for_status()
         payload = result.json()
-        return payload
+        return payload, result.headers["Link"]
