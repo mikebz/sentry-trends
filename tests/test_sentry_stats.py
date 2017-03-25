@@ -41,8 +41,10 @@ class SentryStatsTest(unittest.TestCase):
         for event in events:
             print event["eventID"]
             self.assertIsNotNone(event["dateCreated"])
-            self.assertIsNotNone(event["dateCreated"])
+            self.assertIsNotNone(event["dateReceived"])
             # note that sometimes the user node is not present
             # self.assertIsNotNone(event["user"])
             # self.assertIsNotNone(event["user"]["ip_address"])
             self.assertIsNotNone(event["entries"])
+            self.assertIsNotNone(event["type"])
+            self.assertIsNotNone(event["message"])
