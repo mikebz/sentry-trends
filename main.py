@@ -1,6 +1,6 @@
 """small utility for dumping out Sentry event trends"""
 import ConfigParser
-from .sentry_stats import SentryStats
+from sentry_stats import SentryStats
 
 
 def deep_get(dictionary, *keys):
@@ -20,13 +20,14 @@ def main():
     sentry_key = parser.get("api_keys", "sentry")
     organization = parser.get("event_filters", "organization")
     project = parser.get("event_filters", "project")
+    days = parser.getint("event_filters", "days")
 
     print "Sentry Key: " + sentry_key[0:5] + "..."
     print "Organization: " + organization
     print "Project: " + project
 
     stats = SentryStats(sentry_key, organization)
-    events = stats.retrieve_events_raw(project)
+    events = stats.retrieve_events(project, days)
 
     print "\n\nDate Created, Date Received, User ID, Type, Message"
     for event in events:

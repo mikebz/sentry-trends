@@ -1,7 +1,10 @@
 """
 sentry stats functions
 """
+from datetime import datetime, timedelta
+from dateutil import parser
 import requests
+import pytz
 
 
 class SentryStats(object):
@@ -17,6 +20,35 @@ class SentryStats(object):
 
     def _headers(self):
         return {"Authorization": "Bearer " + self.api_key}
+
+    def retrieve_events(self, project, days):
+        """
+        retrieve a list of events for project that are within x days of today
+        """
+        result = []
+        events, next_header = self.retrieve_events_raw(project)
+
+        start_date = pytz.utc.localize(datetime.now()) - timedelta(days=days)
+
+        while events:
+            # go through the events and add them one by one if they are in
+            # the date range
+            for event in events:
+                date_created = parser.parse(event["dateCreated"])
+                if date_created > start_date:
+                    result.append(event)
+                else:
+                    return result
+
+            # if we got through the events and all of them were less than
+            # the start date then we need to fetch more
+            next_link = self.parse_next_url(next_header)
+            if not next_link:
+                return result
+
+            events, next_header = self.retrieve_from_link(next_link)
+
+        return result
 
     def retrieve_events_raw(self, project):
         """
