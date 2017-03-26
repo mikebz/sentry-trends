@@ -36,7 +36,7 @@ def main():
             event["dateReceived"],
             deep_get(event, "user", "id") or "",
             event["type"],
-            event["message"]
+            event["message"].rstrip()
         ]
         print ", ".join(row)
 
