@@ -40,6 +40,7 @@ def main():
         ]
         print ", ".join(row)
 
+    print "\n\nTotal: " + str(len(events))
 
 if __name__ == "__main__":
     main()
