@@ -28,7 +28,8 @@ class SentryStats(object):
         result = []
         events, next_header = self.retrieve_events_raw(project)
 
-        start_date = pytz.utc.localize(datetime.now()) - timedelta(days=days)
+        utc_now = pytz.utc.localize(datetime.utcnow())
+        start_date = utc_now - timedelta(days=days)
 
         while events:
             # go through the events and add them one by one if they are in
