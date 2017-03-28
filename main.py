@@ -47,8 +47,9 @@ def main():
         print ", ".join(row)
 
         date_created = parser.parse(event["dateCreated"])
-        delta = end_date - date_created 
-        day_breakdown[delta.days] += 1
+        delta = end_date - date_created
+        day_slot = days - delta.days - 1
+        day_breakdown[day_slot] += 1
 
     print "\n\nTotal: " + str(len(events))
 
