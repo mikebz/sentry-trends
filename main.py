@@ -19,7 +19,20 @@ def deep_get(dictionary, *keys):
 
 def process_issues(sentry_key, organization, project):
     """process issues"""
-    
+    stats = SentryStats(sentry_key, organization)
+    issues = stats.retrieve_issues(project)
+
+    print "\n\nTitle, Links, hits, percent gain"
+    for issue in issues:
+        row = [
+            issue["title"],
+            issue["status"],
+            issue["jiraLink"],
+            str(issue["hitsPerIssue"]),
+            str(issue["percentGain"])
+        ]
+        print ", ".join(row)
+
 
 def process_events(sentry_key, organization, project, days):
     """process and output the events for this project"""

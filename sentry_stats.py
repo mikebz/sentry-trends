@@ -40,8 +40,7 @@ class SentryStats(object):
             if len(more_issues) == 0:
                 next_link = None
 
-        result = []
-        total_hits = 0
+        total_hits = float(0)
         # step one iterate over the results
         # and count up the total hits
         for issue in issues:
@@ -60,8 +59,11 @@ class SentryStats(object):
                 hits_per_issue += event[1]
 
             issue["hitsPerIssue"] = hits_per_issue
-
             total_hits += hits_per_issue
+
+            issue["jiraLink"] = ""
+            if len(issue["annotations"]):
+                issue["jiraLink"] = issue["annotations"][0]
 
         # step two
         # actually calculate the gain that happens if the issue is solved
@@ -69,14 +71,15 @@ class SentryStats(object):
             percent_gain = issue["hitsPerIssue"] / total_hits
             issue["percentGain"] = percent_gain
 
-        return result
+        return issues
 
     def retrieve_issues_raw(self, project):
         """
         retrieve a list of events for the last 14 days
         """
         link = ("https://app.getsentry.com/api/0/projects/{}/{}/"
-                "issues/?statsPeriod=14d").format(self.organization, project)
+                "issues/?statsPeriod=14d&query=").format(self.organization,
+                                                         project)
 
         return self.retrieve_from_link(link)
 
