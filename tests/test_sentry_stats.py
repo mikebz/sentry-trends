@@ -94,7 +94,7 @@ class SentryStatsTest(unittest.TestCase):
         next_link = SentryStats.parse_next_url(random_string)
         self.assertIsNone(next_link)
 
-    def test_get_issues(self):
+    def test_get_issues_raw(self):
         """
         basic test to get the events from the last 2 weeks
         """
@@ -104,4 +104,18 @@ class SentryStatsTest(unittest.TestCase):
         for issue in issues:
             self.assertIsNotNone(issue["lastSeen"])
             self.assertIsNotNone(issue["title"])
+            self.assertIsNotNone(issue["annotations"])
+
+    def test_get_issues(self):
+        """
+        this test ensures that we can not only get the issues
+        but also get the calculation for percent gain
+        """
+        stats = SentryStats(self.sentry_key, self.organization)
+        issues = stats.retrieve_issues(self.project)
+        self.assertIsNotNone(issues)
+        for issue in issues:
+            self.assertIsNotNone(issue["hitsPerIssue"])
+            self.assertIsNotNone(issue["title"])
+            self.assertIsNotNone(issue["percentGain"])
             self.assertIsNotNone(issue["annotations"])

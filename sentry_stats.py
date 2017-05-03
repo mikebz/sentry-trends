@@ -21,6 +21,56 @@ class SentryStats(object):
     def _headers(self):
         return {"Authorization": "Bearer " + self.api_key}
 
+    def retrieve_issues(self, project):
+        """
+        retrieve the issues, the JIRA links and issue impact
+        for the 14 day period
+        """
+        issues, next_header = self.retrieve_issues_raw(project)
+        next_link = self.parse_next_url(next_header)
+
+        while next_link:
+            more_issues, next_header = self.retrieve_from_link(next_link)
+            issues.extend(more_issues)
+            next_link = self.parse_next_url(next_header)
+
+            # there might be a bug in sentry
+            # because they provide the next link even though there are
+            # no more results.  we need to stop appending here
+            if len(more_issues) == 0:
+                next_link = None
+
+        result = []
+        total_hits = 0
+        # step one iterate over the results
+        # and count up the total hits
+        for issue in issues:
+            stats = issue["stats"]["14d"]
+
+            """
+            example of stats structure:
+
+             "stats": { "14d": [
+                    [ 1492646400, 1],
+                    [ 1492732800, 1],
+                ]}
+            """
+            hits_per_issue = 0
+            for event in stats:
+                hits_per_issue += event[1]
+
+            issue["hitsPerIssue"] = hits_per_issue
+
+            total_hits += hits_per_issue
+
+        # step two
+        # actually calculate the gain that happens if the issue is solved
+        for issue in issues:
+            percent_gain = issue["hitsPerIssue"] / total_hits
+            issue["percentGain"] = percent_gain
+
+        return result
+
     def retrieve_issues_raw(self, project):
         """
         retrieve a list of events for the last 14 days
