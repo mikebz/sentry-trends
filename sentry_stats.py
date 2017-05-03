@@ -21,6 +21,15 @@ class SentryStats(object):
     def _headers(self):
         return {"Authorization": "Bearer " + self.api_key}
 
+    def retrieve_issues_raw(self, project):
+        """
+        retrieve a list of events for the last 14 days
+        """
+        link = ("https://app.getsentry.com/api/0/projects/{}/{}/"
+                "issues/?statsPeriod=14d").format(self.organization, project)
+
+        return self.retrieve_from_link(link)
+
     def retrieve_events(self, project, days):
         """
         retrieve a list of events for project that are within x days of today

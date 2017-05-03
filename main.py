@@ -1,6 +1,7 @@
 """small utility for dumping out Sentry event trends"""
 import ConfigParser
 from datetime import datetime
+import sys
 from dateutil import parser
 import pytz
 from sentry_stats import SentryStats
@@ -16,18 +17,12 @@ def deep_get(dictionary, *keys):
     return reduce(lambda d, key: d.get(key) if d else None, keys, dictionary)
 
 
-def main():
-    """main command line entry point"""
-    config_parser = ConfigParser.ConfigParser()
-    config_parser.read("config.ini")
-    sentry_key = config_parser.get("api_keys", "sentry")
-    organization = config_parser.get("event_filters", "organization")
-    project = config_parser.get("event_filters", "project")
-    days = config_parser.getint("event_filters", "days")
-    print "Sentry Key: " + sentry_key[0:5] + "..."
-    print "Organization: " + organization
-    print "Project: " + project
-    print "Days of data: " + str(days)
+def process_issues(sentry_key, organization, project):
+    """process issues"""
+    
+
+def process_events(sentry_key, organization, project, days):
+    """process and output the events for this project"""
 
     stats = SentryStats(sentry_key, organization)
     events = stats.retrieve_events(project, days)
@@ -58,5 +53,33 @@ def main():
         print str(day) + ", " + str(occurances)
 
 
+def main(argv):
+    """main command line entry point"""
+    if len(argv) == 0 \
+       or argv[0] in ['/?', '-?', 'help', '-h', '/h'] \
+       or not argv[0] in ['issues', 'events']:
+        print "main.py help - for help"
+        print "main.py events - for event report"
+        print "main.py issues - for issues"
+        sys.exit()
+
+    config_parser = ConfigParser.ConfigParser()
+    config_parser.read("config.ini")
+    sentry_key = config_parser.get("api_keys", "sentry")
+    organization = config_parser.get("common_filters", "organization")
+    project = config_parser.get("common_filters", "project")
+    print "Sentry Key: " + sentry_key[0:5] + "..."
+    print "Organization: " + organization
+    print "Project: " + project
+
+    command = argv[0]
+    if command == 'issues':
+        process_issues(sentry_key, organization, project)
+    elif command == 'events':
+        days = config_parser.getint("event_filters", "days")
+        print "Days of data: " + str(days)
+        process_events(sentry_key, organization, project, days)
+
+
 if __name__ == "__main__":
-    main()
+    main(sys.argv[1:])

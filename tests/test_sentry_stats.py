@@ -20,8 +20,8 @@ class SentryStatsTest(unittest.TestCase):
         # for testing..
         parser.read("config.ini")
         self.sentry_key = parser.get("api_keys", "sentry")
-        self.organization = parser.get("event_filters", "organization")
-        self.project = parser.get("event_filters", "project")
+        self.organization = parser.get("common_filters", "organization")
+        self.project = parser.get("common_filters", "project")
 
     def test_get_projects(self):
         """
@@ -93,3 +93,15 @@ class SentryStatsTest(unittest.TestCase):
         random_string = ''.join(choice(string.printable) for x in range(200))
         next_link = SentryStats.parse_next_url(random_string)
         self.assertIsNone(next_link)
+
+    def test_get_issues(self):
+        """
+        basic test to get the events from the last 2 weeks
+        """
+        stats = SentryStats(self.sentry_key, self.organization)
+        issues, _ = stats.retrieve_issues_raw(self.project)
+        self.assertIsNotNone(issues)
+        for issue in issues:
+            self.assertIsNotNone(issue["lastSeen"])
+            self.assertIsNotNone(issue["title"])
+            self.assertIsNotNone(issue["annotations"])
