@@ -1,4 +1,6 @@
 # sentry-trends
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmikebz%2Fsentry-trends.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmikebz%2Fsentry-trends?ref=badge_shield)
+
 A Python script that grabs Sentry events and outputs them as CSV
 
 To use this cript:
@@ -14,3 +16,7 @@ Sample usage:
 ```
 python main.py 
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fmikebz%2Fsentry-trends.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fmikebz%2Fsentry-trends?ref=badge_large)
